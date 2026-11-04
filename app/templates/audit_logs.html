@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Security Audit Logs - SQLi Lab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+      <h1 class="page-title">📋 Security Audit & Incident Logs</h1>
+      <p class="page-subtitle">
+        Nhật ký theo dõi toàn bộ các yêu cầu gửi tới hệ thống. Ghi lại chi tiết payload, câu lệnh SQL thực tế và mức độ rủi ro nhằm phục vụ phân tích điều tra số (Digital Forensics).
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <button onclick="window.location.reload()" class="btn btn-outline btn-sm">
+        🔄 Làm Mới
+      </button>
+      <button onclick="triggerDatabaseReset()" class="btn btn-danger btn-sm">
+        Xóa Sạch & Reset Logs
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Thời Điểm</th>
+          <th>Phòng Lab</th>
+          <th>Chế Độ</th>
+          <th>Dữ Liệu Đầu Vào (Payload)</th>
+          <th>Câu Truy Vấn Thực Thi</th>
+          <th>Trạng Thái</th>
+          <th>Mức Rủi Ro</th>
+        </tr>
+      </thead>
+      <tbody id="logs-tbody">
+        {% for log in logs %}
+          <tr>
+            <td>{{ log.id }}</td>
+            <td style="font-size: 0.75rem; color: var(--text-dim); white-space: nowrap;">{{ log.timestamp }}</td>
+            <td><span class="badge badge-info">{{ log.module }}</span></td>
+            <td>
+              <span class="badge {% if log.mode == 'SECURE' %}badge-success{% elif log.mode == 'NAIVE' %}badge-warning{% else %}badge-danger{% endif %}">
+                {{ log.mode }}
+              </span>
+            </td>
+            <td>
+              <code style="font-size: 0.8rem; color: var(--color-primary); font-family: monospace;">
+                {{ log.payload }}
+              </code>
+            </td>
+            <td>
+              <code style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;">
+                {{ log.executed_query }}
+              </code>
+            </td>
+            <td>
+              {% if log.status == 'EXPLOITED' %}
+                <span class="badge badge-danger">EXPLOITED</span>
+              {% elif log.status == 'BLOCKED' %}
+                <span class="badge badge-warning">BLOCKED</span>
+              {% elif log.status == 'SQL_ERROR' %}
+                <span class="badge badge-warning">SQL_ERROR</span>
+              {% elif log.status == 'SUCCESS' %}
+                <span class="badge badge-success">SUCCESS</span>
+              {% else %}
+                <span class="badge badge-info">{{ log.status }}</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if log.risk_level == 'HIGH' %}
+                <span class="badge badge-danger">HIGH RISK</span>
+              {% elif log.risk_level == 'MEDIUM' %}
+                <span class="badge badge-warning">MEDIUM</span>
+              {% else %}
+                <span class="badge badge-success">LOW / INFO</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

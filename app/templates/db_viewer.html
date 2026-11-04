@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Database Inspection - SQLi Lab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+      <h1 class="page-title">🗄️ Database Inspection (Xem Cơ Sở Dữ Liệu)</h1>
+      <p class="page-subtitle">
+        Xem trực tiếp cấu trúc và dữ liệu các bảng giả lập trong SQLite Sandbox. Dữ liệu này giúp bạn đối chiếu khi thực hiện các kỹ thuật khai thác trích xuất dữ liệu.
+      </p>
+    </div>
+    <button onclick="triggerDatabaseReset()" class="btn btn-danger btn-sm">
+      🔄 1-Click Reset Sandbox Database
+    </button>
+  </div>
+</div>
+
+<!-- Table 1: Users -->
+<div class="card" style="margin-bottom: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 class="card-title">👤 Bảng <code>users</code> (Mục tiêu của Lab 1: Auth Bypass)</h3>
+    <span class="badge badge-info">{{ users | length }} Bản ghi</span>
+  </div>
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Full Name</th>
+          <th>Role</th>
+          <th>Secret Note</th>
+          <th>Mật khẩu</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+          <tr>
+            <td>{{ u.id }}</td>
+            <td><strong>@{{ u.username }}</strong></td>
+            <td>{{ u.full_name }}</td>
+            <td><span class="badge {% if u.role == 'admin' %}badge-danger{% else %}badge-info{% endif %}">{{ u.role }}</span></td>
+            <td><code style="font-size: 0.8rem; color: var(--color-warning);">{{ u.secret_note or 'N/A' }}</code></td>
+            <td><span class="badge badge-success">Băm PBKDF2:SHA256 (An toàn)</span></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Table 2: Products -->
+<div class="card" style="margin-bottom: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 class="card-title">📦 Bảng <code>products</code> (Mục tiêu của Lab 2: UNION Exfiltration)</h3>
+    <span class="badge badge-info">{{ products | length }} Bản ghi</span>
+  </div>
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tên Sản Phẩm</th>
+          <th>Danh Mục</th>
+          <th>Giá ($)</th>
+          <th>Mô Tả</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+          <tr>
+            <td>{{ p.id }}</td>
+            <td><strong>{{ p.name }}</strong></td>
+            <td><span class="badge badge-warning">{{ p.category }}</span></td>
+            <td>${{ "%.2f"|format(p.price) }}</td>
+            <td>{{ p.description }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Table 3: Secret Vault -->
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h3 class="card-title">🔒 Bảng <code>secret_vault</code> (Mục tiêu của CTF Challenge 2)</h3>
+    <span class="badge badge-danger">{{ secrets | length }} Cờ Bí Mật</span>
+  </div>
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tên Mục</th>
+          <th>Mã Flag (CTF)</th>
+          <th>Mức Độ Bảo Mật</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in secrets %}
+          <tr>
+            <td>{{ s.id }}</td>
+            <td>{{ s.item_name }}</td>
+            <td><strong style="color: var(--color-success); font-family: monospace;">{{ s.flag_code }}</strong></td>
+            <td><span class="badge badge-danger">{{ s.clearance_level }}</span></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

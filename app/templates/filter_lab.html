@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Lab 3: Filter Evasion (Bypass WAF) - SQLi Lab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+      <h1 class="page-title">Lab 3: Filter Evasion & Blacklist Bypass (Vượt Bộ Lọc)</h1>
+      <p class="page-subtitle">
+        Khám phá nguyên nhân vì sao cơ chế lọc từ khóa đơn giản (Regex Blacklist) luôn thất bại trước các kỹ thuật làm rối mã (Obfuscation) và tại sao chỉ có <strong>Prepared Statements</strong> mới là giải pháp triệt để.
+      </p>
+    </div>
+    <span class="badge badge-warning">Cơ chế phòng thủ yếu</span>
+  </div>
+</div>
+
+<div class="grid-2">
+  <!-- Left Side: Filter Bypass Console -->
+  <div class="card">
+    <h3 class="card-title">🛡️ Thử Nghiệm Vượt Bộ Lọc Blacklist</h3>
+
+    <form id="filter-form" method="POST" action="{{ url_for('filter_lab.filter_lab') }}">
+      
+      <!-- Mode Selection -->
+      <label class="form-label">Chọn Cơ Chế Phòng Thủ</label>
+      <div class="mode-selector">
+        <div class="mode-option naive">
+          <input type="radio" id="mode-naive" name="mode" value="naive" {% if mode == 'naive' or not mode %}checked{% endif %}>
+          <label for="mode-naive">⚠️ Naive Filter (Lọc Regex)</label>
+        </div>
+        <div class="mode-option secure">
+          <input type="radio" id="mode-secure" name="mode" value="secure" {% if mode == 'secure' %}checked{% endif %}>
+          <label for="mode-secure">🛡️ Secure (Prepared Query)</label>
+        </div>
+        <div class="mode-option vuln">
+          <input type="radio" id="mode-vuln" name="mode" value="vulnerable" {% if mode == 'vulnerable' %}checked{% endif %}>
+          <label for="mode-vuln">❌ Không phòng thủ</label>
+        </div>
+      </div>
+
+      <!-- Quick Payload Library -->
+      <label class="form-label">Thư Viện Thử Nghiệm Bypass (1-Click Fill)</label>
+      <div class="payload-chips">
+        <button type="button" class="payload-btn" data-target-input="username-input" data-payload="admin' OR 1=1 --">
+          admin' OR 1=1 -- (Sẽ bị bộ lọc chặn)
+        </button>
+        <button type="button" class="payload-btn" data-target-input="username-input" data-payload="admin' oR '1'='1' --">
+          admin' oR '1'='1' -- (Bypass bằng chữ thường)
+        </button>
+        <button type="button" class="payload-btn" data-target-input="username-input" data-payload="admin'/**/oR/**/1=1--">
+          admin'/**/oR/**/1=1-- (Bypass bằng Comment /**/)
+        </button>
+      </div>
+
+      <!-- Form Inputs -->
+      <div class="form-group">
+        <label class="form-label" for="username-input">Tên tài khoản hoặc Payload</label>
+        <input type="text" id="username-input" name="username" class="form-control form-control-mono" 
+               placeholder="Nhập payload bypass..." value="{{ username or '' }}" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password-input">Mật khẩu</label>
+        <input type="password" id="password-input" name="password" class="form-control" 
+               placeholder="Mật khẩu (có thể để trống khi bypass)..." value="{{ password or '' }}">
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">
+          ⚡ Gửi Kiểm Tra Bộ Lọc
+        </button>
+        <button type="button" onclick="document.getElementById('username-input').value=''; document.getElementById('password-input').value='';" class="btn btn-outline">
+          Xóa Form
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Blacklist Info Box -->
+    <div style="margin-top: 1.75rem; padding: 1rem; background-color: var(--bg-input); border-radius: var(--radius-sm); border-left: 3px solid var(--color-warning);">
+      <h4 style="font-size: 0.85rem; color: var(--color-warning); margin-bottom: 4px;">⚠️ Điểm Yếu Của Regex Trong Demo</h4>
+      <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+        Bộ lọc Naive Blacklist chỉ kiểm tra từ khóa chữ hoa nguyên bản (<code>\bOR\b</code>, <code>\bAND\b</code>, <code>\bUNION\b</code>). Kẻ tấn công dễ dàng đánh lừa bằng chữ thường xen lẫn (<code>oR</code>) hoặc thay khoảng trắng bằng chú thích SQL <code>/**/</code>.
+      </p>
+    </div>
+  </div>
+
+  <!-- Right Side: Live Results & Comparisons -->
+  <div>
+    <div id="result-container">
+      {% if result %}
+        {% if result.blocked_by_filter %}
+          <div class="alert alert-danger">
+            <div>
+              <div style="font-weight: 700;">🛡️ Bị chặn bởi bộ lọc WAF / Naive Blacklist</div>
+              <div>{{ result.filter_reason }}</div>
+            </div>
+          </div>
+        {% elif result.bypassed_filter and result.success %}
+          <div class="alert alert-success">
+            <div>
+              <div style="font-weight: 700;">🎯 VƯỢT QUA BỘ LỌC THÀNH CÔNG (BYPASS EXPLOITED)!</div>
+              <div>{{ result.filter_reason }}</div>
+              <div style="margin-top: 0.5rem;">Đăng nhập thành công tài khoản: <strong>{{ result.user.full_name }}</strong> (@{{ result.user.username }})</div>
+            </div>
+          </div>
+        {% elif result.success %}
+          <div class="alert alert-success">
+            <div>
+              <div style="font-weight: 700;">🔓 Đăng nhập thành công</div>
+              <div>Tài khoản: <strong>{{ result.user.full_name }}</strong></div>
+            </div>
+          </div>
+        {% else %}
+          <div class="alert alert-warning">
+            <div>
+              <div style="font-weight: 700;">🔒 Đăng nhập thất bại</div>
+              <div>{{ result.error or 'Xác thực không thành công.' }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Render Query Inspector -->
+        <div class="inspector-card">
+          <div class="inspector-header">
+            <span class="inspector-title">⚡ LIVE SQL QUERY INSPECTOR</span>
+            <span class="badge {% if result.inspector.mode == 'secure' %}badge-success{% else %}badge-warning{% endif %}">{{ result.inspector.mode }}</span>
+          </div>
+          <div class="inspector-body">
+            <div class="sql-terminal">{{ result.inspector.html_output | safe }}</div>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.6;">
+              {{ result.inspector.explanation | safe }}
+            </p>
+            <div style="margin-top: 0.5rem; font-family: monospace; font-size: 0.8rem; color: #64748b;">
+              {{ result.inspector.params_display }}
+            </div>
+            <div class="inspector-legend">
+              <div class="legend-item"><div class="legend-swatch" style="background: #94a3b8;"></div> Code gốc</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #ff3366;"></div> Payload tiêm nhiễm</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #ffaa00;"></div> Ký hiệu Comment</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #475569;"></div> Code bị vô hiệu</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #00e676;"></div> Tham số an toàn (?)</div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="card" style="text-align: center; padding: 3rem 2rem; color: var(--text-muted);">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
+          <h3 style="color: var(--text-main); margin-bottom: 0.5rem;">Sẵn sàng thử nghiệm vượt bộ lọc</h3>
+          <p style="font-size: 0.9rem; max-width: 420px; margin: 0 auto;">
+            Bấm thử <code>admin' OR 1=1 --</code> để xem bộ lọc chặn thành công, sau đó bấm <code>admin'/**/oR/**/1=1#</code> để thấy kỹ thuật qua mặt bộ lọc (Bypass).
+          </p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Comparative Matrix Table -->
+    <div class="card" style="margin-top: 1.5rem;">
+      <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text-main);">📊 So Sánh 3 Cấp Độ Phòng Thủ</h4>
+      <div class="table-responsive">
+        <table class="data-table" style="font-size: 0.8rem;">
+          <thead>
+            <tr>
+              <th>Cấp độ</th>
+              <th>Cơ chế</th>
+              <th>Mức độ an toàn</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-danger">Cấp 0: Ghép Chuỗi</span></td>
+              <td>Ghép trực tiếp biến vào SQL</td>
+              <td style="color: var(--color-danger);">Không an toàn (Dễ bị khai thác 100%)</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-warning">Cấp 1: Regex Blacklist</span></td>
+              <td>Lọc từ khóa OR, UNION</td>
+              <td style="color: var(--color-warning);">Kém (Dễ bị bypass bằng obfuscation)</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-success">Cấp 2: Prepared Statements</span></td>
+              <td>Tham số hóa bằng dấu <code>?</code></td>
+              <td style="color: var(--color-success); font-weight: 700;">An toàn tuyệt đối (Khuyến nghị OWASP)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/simulator.js') }}"></script>
+{% endblock %}

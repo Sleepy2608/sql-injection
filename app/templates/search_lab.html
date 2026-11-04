@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}Lab 2: UNION-Based Data Exfiltration - SQLi Lab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+      <h1 class="page-title">Lab 2: UNION-Based Data Exfiltration (Trích Xuất Dữ Liệu)</h1>
+      <p class="page-subtitle">
+        Minh họa kỹ thuật lợi dụng toán tử <strong>UNION SELECT</strong> tại tính năng tìm kiếm để trích xuất dữ liệu từ các bảng nhạy cảm khác trong cơ sở dữ liệu.
+      </p>
+    </div>
+    <span class="badge badge-danger">Rò rỉ dữ liệu (OWASP A03)</span>
+  </div>
+</div>
+
+<div class="grid-2">
+  <!-- Left Side: Search Console -->
+  <div class="card">
+    <h3 class="card-title">🔍 Tra Cứu Sản Phẩm & Khai Thác</h3>
+
+    <form id="search-form" method="POST" action="{{ url_for('search.search_lab') }}">
+      
+      <!-- Mode Selection -->
+      <label class="form-label">Chọn Chế Độ Bảo Mật</label>
+      <div class="mode-selector">
+        <div class="mode-option vuln">
+          <input type="radio" id="mode-vuln" name="mode" value="vulnerable" {% if mode != 'secure' %}checked{% endif %}>
+          <label for="mode-vuln">⚠️ Vulnerable (Ghép Chuỗi)</label>
+        </div>
+        <div class="mode-option secure">
+          <input type="radio" id="mode-secure" name="mode" value="secure" {% if mode == 'secure' %}checked{% endif %}>
+          <label for="mode-secure">🛡️ Secure (Prepared Query)</label>
+        </div>
+      </div>
+
+      <!-- Quick Payload Library -->
+      <label class="form-label">Thư Viện Payload UNION Mẫu (1-Click Fill)</label>
+      <div class="payload-chips">
+        <button type="button" class="payload-btn" data-target-input="search-input" 
+                data-payload="' UNION SELECT id, username, role, password_hash, secret_note FROM users --">
+          Trích xuất bảng Users
+        </button>
+        <button type="button" class="payload-btn" data-target-input="search-input" 
+                data-payload="' UNION SELECT id, item_name, clearance_level, 0, flag_code FROM secret_vault --">
+          Trích xuất bảng Secret Vault (CTF Flag)
+        </button>
+        <button type="button" class="payload-btn" data-target-input="search-input" data-payload="Firewall">
+          Tìm kiếm hợp lệ ("Firewall")
+        </button>
+        <button type="button" class="payload-btn" data-target-input="search-input" data-payload="' OR 1=1 --">
+          Hiện toàn bộ sản phẩm (' OR 1=1)
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="form-group">
+        <label class="form-label" for="search-input">Từ khóa tìm kiếm (Search Term)</label>
+        <input type="text" id="search-input" name="query" class="form-control form-control-mono" 
+               placeholder="Nhập tên sản phẩm hoặc tiêm lệnh UNION..." value="{{ search_term or '' }}" required autofocus>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">
+          🔎 Tìm Kiếm & Kiểm Tra
+        </button>
+        <button type="button" onclick="document.getElementById('search-input').value='';" class="btn btn-outline">
+          Xóa
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Lab Theory Callout -->
+    <div style="margin-top: 1.75rem; padding: 1rem; background-color: var(--bg-input); border-radius: var(--radius-sm); border-left: 3px solid var(--color-warning);">
+      <h4 style="font-size: 0.85rem; color: var(--color-warning); margin-bottom: 4px;">💡 Quy Tắc Toán Tử UNION</h4>
+      <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+        Để toán tử <code>UNION</code> hoạt động thành công, câu truy vấn thứ hai phải có <strong>cùng số lượng cột</strong> (ở đây là 5 cột: id, name, category, price, description) và các kiểu dữ liệu tương thích với bảng gốc.
+      </p>
+    </div>
+  </div>
+
+  <!-- Right Side: Results & Inspector -->
+  <div>
+    <div id="result-container">
+      {% if result %}
+        {% set is_exploited = result.inspector.raw_query and 'UNION' in result.inspector.raw_query.upper() %}
+        
+        {% if result.success %}
+          <div class="alert {% if is_exploited %}alert-danger{% else %}alert-info{% endif %}">
+            <div>
+              <div style="font-weight: 700;">
+                {% if is_exploited %}
+                  🚨 DỮ LIỆU BỊ RÒ RỈ THÀNH CÔNG QUA MỆNH ĐỀ UNION SELECT!
+                {% else %}
+                  🔍 Kết quả tìm kiếm sản phẩm
+                {% endif %}
+              </div>
+              <div>Tìm thấy <strong>{{ result.count }}</strong> bản ghi trả về từ cơ sở dữ liệu.</div>
+            </div>
+          </div>
+
+          {% if result.results %}
+            <div class="table-responsive" style="margin-top: 1rem;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    {% for col in result.columns or result.results[0].keys() %}
+                      <th>{{ col }}</th>
+                    {% endfor %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in result.results %}
+                    <tr>
+                      {% for col in result.columns or row.keys() %}
+                        <td>
+                          {% if col == 'password_hash' %}
+                            <code style="font-size: 0.75rem; color: #ff3366;">{{ row[col][:25] }}...</code>
+                          {% elif col == 'flag_code' or 'FLAG{' in (row[col]|string) %}
+                            <strong style="color: var(--color-success); font-family: monospace;">{{ row[col] }}</strong>
+                          {% else %}
+                            {{ row[col] if row[col] is not none else 'null' }}
+                          {% endif %}
+                        </td>
+                      {% endfor %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p style="color: var(--text-muted); margin-top: 1rem;">Không tìm thấy kết quả nào.</p>
+          {% endif %}
+
+        {% else %}
+          <div class="alert alert-warning">
+            <div>
+              <div style="font-weight: 700;">⚠️ Lỗi thực thi truy vấn SQLite</div>
+              <div style="font-family: monospace; margin-top: 4px;">{{ result.error }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Render Query Inspector -->
+        <div class="inspector-card">
+          <div class="inspector-header">
+            <span class="inspector-title">⚡ LIVE SQL QUERY INSPECTOR</span>
+            <span class="badge {% if result.inspector.mode == 'secure' %}badge-success{% else %}badge-danger{% endif %}">{{ result.inspector.mode }}</span>
+          </div>
+          <div class="inspector-body">
+            <div class="sql-terminal">{{ result.inspector.html_output | safe }}</div>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.6;">
+              {{ result.inspector.explanation | safe }}
+            </p>
+            <div style="margin-top: 0.5rem; font-family: monospace; font-size: 0.8rem; color: #64748b;">
+              {{ result.inspector.params_display }}
+            </div>
+            <div class="inspector-legend">
+              <div class="legend-item"><div class="legend-swatch" style="background: #94a3b8;"></div> Code gốc</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #ff3366;"></div> Payload tiêm nhiễm</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #ffaa00;"></div> Ký hiệu Comment</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #475569;"></div> Code bị vô hiệu</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #00e676;"></div> Tham số an toàn (?)</div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="card" style="text-align: center; padding: 3rem 2rem; color: var(--text-muted);">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🔎</div>
+          <h3 style="color: var(--text-main); margin-bottom: 0.5rem;">Sẵn sàng trích xuất dữ liệu</h3>
+          <p style="font-size: 0.9rem; max-width: 420px; margin: 0 auto;">
+            Chọn payload <strong>Trích xuất bảng Users</strong> từ Thư viện bên trái để xem cách dữ liệu tài khoản và password hash bị phơi bày ra giao diện tìm kiếm sản phẩm.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/simulator.js') }}"></script>
+{% endblock %}
+

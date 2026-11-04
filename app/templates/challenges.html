@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}CTF Challenge Arena - SQLi Lab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+      <h1 class="page-title">🏆 CTF Security Challenge Arena</h1>
+      <p class="page-subtitle">
+        Khu vực bài tập thực hành an ninh mạng: Vận dụng kiến thức SQL Injection để khai thác, tìm kiếm Flag và ghi điểm vào bảng thành tích.
+      </p>
+    </div>
+    
+    <!-- Scoreboard summary badge -->
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 0.75rem 1.25rem; border-radius: var(--radius-md); text-align: right;">
+      <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Tiến độ hoàn thành</div>
+      <div style="font-size: 1.35rem; font-weight: 800; color: var(--color-primary);" id="total-progress">
+        {{ solved | length }} / {{ challenges | length }} Hoàn Thành
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+  {% for ch in challenges %}
+    {% set is_solved = ch.id in solved %}
+    <div class="card" style="border-left: 4px solid {% if is_solved %}var(--color-success){% elif ch.difficulty == 'Easy' %}var(--color-info){% elif ch.difficulty == 'Medium' %}var(--color-warning){% else %}var(--color-danger){% endif %};">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">{{ ch.title }}</h3>
+          <span class="badge {% if ch.difficulty == 'Easy' %}badge-info{% elif ch.difficulty == 'Medium' %}badge-warning{% else %}badge-danger{% endif %}">
+            {{ ch.difficulty }}
+          </span>
+          <span class="badge badge-primary">+{{ ch.points }} Điểm</span>
+        </div>
+
+        <span id="status-{{ ch.id }}" class="badge {% if is_solved %}badge-success{% else %}badge-warning{% endif %}">
+          {% if is_solved %}✅ ĐÃ HOÀN THÀNH{% else %}⏳ CHƯA GIẢI{% endif %}
+        </span>
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.6;">
+        {{ ch.description }}
+      </p>
+
+      <!-- Action & Hint Controls -->
+      <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem;">
+        <a href="{{ ch.target_url }}" class="btn btn-primary btn-sm">
+          🎯 Mở Phòng Thí Nghiệm &rarr;
+        </a>
+        <button type="button" class="btn btn-outline btn-sm btn-toggle-hint" data-target-hint="hint-{{ ch.id }}">
+          Xem gợi ý
+        </button>
+      </div>
+
+      <!-- Collapsible Hint Box -->
+      <div id="hint-{{ ch.id }}" style="display: none; padding: 0.85rem 1rem; background-color: var(--bg-input); border-radius: var(--radius-sm); border: 1px dashed var(--border-color); margin-bottom: 1rem;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--color-warning); margin-bottom: 4px;">💡 GỢI Ý KHAI THÁC:</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">{{ ch.hint }}</p>
+        <div style="font-size: 0.8rem; color: var(--text-dim);">
+          Payload tham khảo: <code style="color: var(--color-primary); font-family: monospace;">{{ ch.sample_payload }}</code>
+        </div>
+      </div>
+
+      <!-- Flag Submission Form -->
+      <div style="display: flex; gap: 0.75rem; align-items: center; max-width: 600px; margin-top: 0.5rem;">
+        <input type="text" id="flag-input-{{ ch.id }}" class="form-control form-control-mono" 
+               placeholder="Nhập flag tìm được (ví dụ: FLAG{...})" 
+               value="{% if is_solved %}{{ ch.flag }}{% endif %}" 
+               {% if is_solved %}disabled{% endif %}>
+        
+        {% if not is_solved %}
+          <button type="button" class="btn btn-danger btn-sm btn-submit-flag" data-challenge-id="{{ ch.id }}">
+            Nộp Flag
+          </button>
+        {% endif %}
+      </div>
+
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/challenges.js') }}"></script>
+{% endblock %}
+

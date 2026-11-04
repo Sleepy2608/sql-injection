@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SQL Injection Attack & Defense Lab{% endblock %} - Đồ Án An Toàn Thông Tin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="{{ url_for('main.index') }}" class="nav-brand">
+      <div class="brand-icon">⚡</div>
+      <span>SQLi Simulator Lab</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="{{ url_for('main.index') }}" class="{% if request.endpoint == 'main.index' %}active{% endif %}">Dashboard</a></li>
+      <li><a href="{{ url_for('auth.auth_lab') }}" class="{% if request.endpoint == 'auth.auth_lab' %}active{% endif %}">Lab 1: Auth Bypass</a></li>
+      <li><a href="{{ url_for('search.search_lab') }}" class="{% if request.endpoint == 'search.search_lab' %}active{% endif %}">Lab 2: UNION Exfil</a></li>
+      <li><a href="{{ url_for('filter_lab.filter_lab') }}" class="{% if request.endpoint == 'filter_lab.filter_lab' %}active{% endif %}">Lab 3: Filter Bypass</a></li>
+      <li><a href="{{ url_for('challenges.challenge_board') }}" class="{% if request.endpoint == 'challenges.challenge_board' %}active{% endif %}">CTF Challenges</a></li>
+      <li><a href="{{ url_for('api.db_viewer') }}" class="{% if request.endpoint == 'api.db_viewer' %}active{% endif %}">DB Viewer</a></li>
+      <li><a href="{{ url_for('api.audit_logs_page') }}" class="{% if request.endpoint == 'api.audit_logs_page' %}active{% endif %}">Audit Logs</a></li>
+      <li><a href="{{ url_for('main.theory') }}" class="{% if request.endpoint == 'main.theory' %}active{% endif %}">Lý Thuyết</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <div class="sandbox-badge">
+        <span class="pulse-dot"></span>
+        SQLite Sandbox
+      </div>
+      <button onclick="triggerDatabaseReset()" class="btn btn-outline btn-sm" title="Khôi phục dữ liệu ban đầu">
+        🔄 Reset DB
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p><strong>Đồ án môn học An toàn thông tin</strong> — Chương trình mô phỏng tấn công SQL Injection & Cơ chế phòng thủ</p>
+    <p style="margin-top: 4px; font-size: 0.8rem; color: #64748b;">
+      Môi trường Sandbox SQLite an toàn cục bộ. Phục vụ mục đích học tập và nghiên cứu bảo mật chuẩn OWASP.
+    </p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
+
