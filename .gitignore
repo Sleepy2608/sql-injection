@@ -24,7 +24,3 @@ htmlcov/
 
 # Environment variables
 .env
-
-# Existing plan folder
-.plan/
-.agents

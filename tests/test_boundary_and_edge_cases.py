@@ -63,3 +63,4 @@ def test_tc25_idempotent_multiple_db_resets(client):
     products_res = client.get('/api/database/products')
     assert products_res.status_code == 200
     assert products_res.get_json()['count'] == 6
+
