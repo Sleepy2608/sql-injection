@@ -27,3 +27,4 @@ htmlcov/
 
 # Existing plan folder
 .plan/
+.agents
