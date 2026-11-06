@@ -1,0 +1,55 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Python source files
+*.py text eol=lf diff=python
+*.pyi text eol=lf diff=python
+*.pyw text eol=lf diff=python
+
+# Web & Frontend files
+*.html text eol=lf diff=html
+*.css text eol=lf diff=css
+*.js text eol=lf
+*.json text eol=lf
+*.svg text eol=lf
+
+# Database & SQL files
+*.sql text eol=lf
+
+# Configuration & Data files
+*.ini text eol=lf
+*.cfg text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+*.md text eol=lf
+requirements.txt text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Shell scripts (Linux / macOS must use LF)
+*.sh text eol=lf
+
+# Windows specific scripts (must use CRLF)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files (prevent Git from modifying line endings)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+*.7z binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+*.pyc binary
+*.pyd binary
+*.pyo binary

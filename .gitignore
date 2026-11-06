@@ -24,3 +24,7 @@ htmlcov/
 
 # Environment variables
 .env
+
+#Personal info
+.agents/
+.casestudy/
