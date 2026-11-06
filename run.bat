@@ -50,3 +50,4 @@ if %errorlevel% neq 0 (
     echo [!] May chu gap su co hoac da dung lai.
     pause
 )
+

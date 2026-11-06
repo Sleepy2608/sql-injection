@@ -1,4 +1,6 @@
-# SQL Injection Attack & Defense Interactive Simulator
+<p align="center">
+  <b>SQL Injection Attack & Defense Interactive Simulator</b>
+</p>
 
 > **Đồ án môn học:** An Toàn Thông Tin (Information Security)  
 > **Yêu cầu đề tài:** Viết một chương trình có nguyên tắc hoạt động mô phỏng mã độc / kỹ thuật tấn công khai thác lỗ hổng cơ sở dữ liệu và cơ chế phòng thủ chuyên sâu.  
@@ -78,7 +80,8 @@ Dự án này là một **Interactive Security Lab & Attack Simulator** chạy h
 | **Cơ sở dữ liệu** | SQLite 3 | Cục bộ, phi máy chủ, thread-safe, dễ dàng reset |
 | **Bảo mật mật khẩu**| Werkzeug Security | Băm mật khẩu chuẩn PBKDF2:SHA256 |
 | **Frontend** | HTML5, CSS3, Vanilla JS | Giao diện Dark SOC Dashboard, Live Query Inspector |
-| **Kiểm thử tự động**| Pytest | Bộ test suite 20 ca kiểm thử tự động đạt 100% pass |
+| **Kiểm thử tự động**| Pytest | Bộ test suite 25 ca kiểm thử tự động đạt 100% pass |
+| **Tiện ích thực thi**| Windows Batch Script | `run.bat` khởi chạy server 1-click & `test.bat` chạy test nhanh |
 
 ---
 
@@ -87,10 +90,13 @@ Dự án này là một **Interactive Security Lab & Attack Simulator** chạy h
 ```text
 sql-injection/
 │
-├── run.py                       # File khởi chạy ứng dụng chính
+├── run.bat                      # [MỚI] Script khởi chạy ứng dụng 1-click trên Windows
+├── test.bat                     # [MỚI] Script chạy 25 ca test tự động 1-click trên Windows
+├── run.py                       # File khởi chạy ứng dụng chính (Flask Server)
 ├── config.py                    # Cấu hình môi trường và đường dẫn SQLite
 ├── requirements.txt             # Thư viện phụ thuộc (Flask, pytest, Werkzeug)
 ├── README.md                    # Tài liệu đồ án và hướng dẫn sử dụng
+├── .gitattributes               # Chuẩn hóa line-ending và phân loại binary
 ├── .gitignore                   # Loại trừ file tạm, cache và database runtime
 │
 ├── app/
@@ -115,11 +121,12 @@ sql-injection/
 │   │   └── js/                  # main.js, simulator.js, challenges.js
 │   └── templates/               # base.html, index.html, các trang lab Jinja2
 │
-└── tests/                       # 20 Test Cases tự động với Pytest
+└── tests/                       # 25 Test Cases tự động với Pytest
     ├── conftest.py              # Test database fixtures
-    ├── test_auth_injection.py   # Test cases cho Lab 1
-    ├── test_union_injection.py  # Test cases cho Lab 2
-    ├── test_filter_bypass.py    # Test cases cho Lab 3
+    ├── test_auth_injection.py   # Test cases cho Lab 1 (Auth Bypass)
+    ├── test_union_injection.py  # Test cases cho Lab 2 (UNION Exfiltration)
+    ├── test_filter_bypass.py    # Test cases cho Lab 3 (Filter Bypass)
+    ├── test_boundary_and_edge_cases.py # [MỚI] Test cases kiểm tra trường hợp biên & ngoại lệ
     └── test_api_and_reset.py    # Test cases cho Reset DB, CTF Flags & API
 ```
 
@@ -127,12 +134,22 @@ sql-injection/
 
 ## 🚀 6. Hướng dẫn cài đặt & Khởi chạy
 
-### Bước 1: Mở Terminal tại thư mục dự án
+### Cách 1: Khởi chạy nhanh 1-Click trên Windows (Khuyến nghị)
+Chỉ cần nhấp đúp chuột vào file **`run.bat`**:
+- Script sẽ tự động kiểm tra Python, tự tạo `venv` và cài dependencies (nếu chưa có).
+- Tự động mở trình duyệt web tại `http://127.0.0.1:5000`.
+- Khởi động server Flask sẵn sàng tương tác.
+
+---
+
+### Cách 2: Khởi chạy thủ công qua dòng lệnh
+
+#### Bước 1: Mở Terminal tại thư mục dự án
 ```bash
 cd "c:\University Coding Project\sql-injection"
 ```
 
-### Bước 2: Kích hoạt Virtual Environment & Cài dependencies
+#### Bước 2: Kích hoạt Virtual Environment & Cài dependencies
 Trên Windows:
 ```bash
 # Đã có sẵn venv hoặc tạo mới:
@@ -143,19 +160,25 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Bước 3: Khởi chạy máy chủ Web
+#### Bước 3: Khởi chạy máy chủ Web
 ```bash
 python run.py
 ```
 
-Mở trình duyệt web và truy cập địa chỉ:
+Mở trình duyệt web và truy cập địa chỉ:  
 👉 **`http://127.0.0.1:5000`**
 
 ---
 
 ## 🧪 7. Chạy kiểm thử tự động (Automated Pytest)
 
-Dự án đi kèm bộ **20 test cases** kiểm thử tự động toàn diện:
+### Cách 1: Chạy nhanh qua file batch
+Nhấp đúp chuột vào file **`test.bat`** để chạy toàn bộ 25 bài test tự động.
+
+---
+
+### Cách 2: Chạy qua dòng lệnh
+Dự án đi kèm bộ **25 test cases** kiểm thử tự động toàn diện:
 ```bash
 .\venv\Scripts\pytest.exe -v
 ```
@@ -163,30 +186,35 @@ Dự án đi kèm bộ **20 test cases** kiểm thử tự động toàn diện:
 **Kết quả kiểm thử:**
 ```text
 ============================= test session starts =============================
-collected 20 items
+collected 25 items
 
-tests/test_api_and_reset.py::test_tc16_reset_database_api PASSED         [  5%]
-tests/test_api_and_reset.py::test_tc17_table_inspection_api PASSED       [ 10%]
-tests/test_api_and_reset.py::test_tc18_table_inspection_whitelist PASSED [ 15%]
-tests/test_api_and_reset.py::test_tc19_submit_correct_flag PASSED        [ 20%]
-tests/test_api_and_reset.py::test_tc20_submit_wrong_flag PASSED          [ 25%]
-tests/test_auth_injection.py::test_tc01_valid_login PASSED               [ 30%]
-tests/test_auth_injection.py::test_tc02_invalid_password PASSED          [ 35%]
-tests/test_auth_injection.py::test_tc03_admin_bypass_vulnerable PASSED   [ 40%]
-tests/test_auth_injection.py::test_tc04_tautology_bypass_vulnerable PASSED [ 45%]
-tests/test_auth_injection.py::test_tc05_admin_bypass_blocked_in_secure_mode PASSED [ 50%]
-tests/test_auth_injection.py::test_tc06_unclosed_quote_syntax_error PASSED [ 55%]
-tests/test_filter_bypass.py::test_tc12_naive_filter_blocks_uppercase_or PASSED [ 60%]
-tests/test_filter_bypass.py::test_tc13_mixed_case_bypasses_naive_filter PASSED [ 65%]
-tests/test_filter_bypass.py::test_tc14_inline_comment_bypasses_naive_filter PASSED [ 70%]
-tests/test_filter_bypass.py::test_tc15_secure_mode_neutralizes_all_bypasses PASSED [ 75%]
-tests/test_union_injection.py::test_tc07_normal_product_search PASSED    [ 80%]
-tests/test_union_injection.py::test_tc08_union_users_exfiltration_vulnerable PASSED [ 85%]
-tests/test_union_injection.py::test_tc09_union_secret_vault_flag_exfiltration PASSED [ 90%]
-tests/test_union_injection.py::test_tc10_union_blocked_in_secure_mode PASSED [ 95%]
+tests/test_api_and_reset.py::test_tc16_reset_database_api PASSED          [  4%]
+tests/test_api_and_reset.py::test_tc17_table_inspection_api PASSED        [  8%]
+tests/test_api_and_reset.py::test_tc18_table_inspection_whitelist PASSED  [ 12%]
+tests/test_api_and_reset.py::test_tc19_submit_correct_flag PASSED         [ 16%]
+tests/test_api_and_reset.py::test_tc20_submit_wrong_flag PASSED           [ 20%]
+tests/test_auth_injection.py::test_tc01_valid_login PASSED                [ 24%]
+tests/test_auth_injection.py::test_tc02_invalid_password PASSED           [ 28%]
+tests/test_auth_injection.py::test_tc03_admin_bypass_vulnerable PASSED    [ 32%]
+tests/test_auth_injection.py::test_tc04_tautology_bypass_vulnerable PASSED [ 36%]
+tests/test_auth_injection.py::test_tc05_admin_bypass_blocked_in_secure_mode PASSED [ 40%]
+tests/test_auth_injection.py::test_tc06_unclosed_quote_syntax_error PASSED [ 44%]
+tests/test_boundary_and_edge_cases.py::test_tc21_boundary_empty_and_whitespace_login PASSED [ 48%]
+tests/test_boundary_and_edge_cases.py::test_tc22_boundary_unicode_vietnamese_characters PASSED [ 52%]
+tests/test_boundary_and_edge_cases.py::test_tc23_boundary_extremely_long_payload PASSED [ 56%]
+tests/test_boundary_and_edge_cases.py::test_tc24_edge_case_missing_json_fields PASSED [ 60%]
+tests/test_boundary_and_edge_cases.py::test_tc25_idempotent_multiple_db_resets PASSED [ 64%]
+tests/test_filter_bypass.py::test_tc12_naive_filter_blocks_uppercase_or PASSED [ 68%]
+tests/test_filter_bypass.py::test_tc13_mixed_case_bypasses_naive_filter PASSED [ 72%]
+tests/test_filter_bypass.py::test_tc14_inline_comment_bypasses_naive_filter PASSED [ 76%]
+tests/test_filter_bypass.py::test_tc15_secure_mode_neutralizes_all_bypasses PASSED [ 80%]
+tests/test_union_injection.py::test_tc07_normal_product_search PASSED     [ 84%]
+tests/test_union_injection.py::test_tc08_union_users_exfiltration_vulnerable PASSED [ 88%]
+tests/test_union_injection.py::test_tc09_union_secret_vault_flag_exfiltration PASSED [ 92%]
+tests/test_union_injection.py::test_tc10_union_blocked_in_secure_mode PASSED [ 96%]
 tests/test_union_injection.py::test_tc11_union_column_mismatch_error PASSED [100%]
 
-============================= 20 passed in 100% =============================
+============================= 25 passed in 100% =============================
 ```
 
 ---
