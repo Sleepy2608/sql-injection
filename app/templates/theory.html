@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="page-header">
-  <h1 class="page-title">📚 Lý Thuyết Chuyên Sâu Về SQL Injection</h1>
+  <h1 class="page-title">Lý Thuyết & Phòng Thủ SQL Injection</h1>
   <p class="page-subtitle">
     Tổng quan học thuật theo chuẩn OWASP Top 10: Cơ chế hình thành lỗ hổng, kỹ thuật khai thác và giải pháp phòng thủ vững chắc.
   </p>
@@ -19,7 +19,7 @@
       Lỗ hổng SQL Injection xảy ra khi ứng dụng <strong>trộn lẫn dữ liệu đầu vào không đáng tin cậy của người dùng (Data) với câu lệnh SQL của hệ thống (Code)</strong> thông qua phép ghép chuỗi thô (String Concatenation).
     </p>
     <div style="background-color: var(--bg-input); padding: 1rem; border-radius: var(--radius-sm); border-left: 3px solid var(--color-danger); font-family: monospace; font-size: 0.85rem; margin-bottom: 1rem;">
-      <span style="color: #ff3366;"># Cách viết sai lầm (Lỗ hổng nghiêm trọng):</span><br>
+      <span style="color: var(--color-danger);"># Cách viết sai lầm (Lỗ hổng nghiêm trọng):</span><br>
       query = f"SELECT * FROM users WHERE user = '{user_input}'"
     </div>
     <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
@@ -54,7 +54,7 @@
   
   <div class="grid-3" style="margin-top: 1.25rem;">
     <div style="background-color: var(--bg-input); padding: 1.25rem; border-radius: var(--radius-sm); border-top: 3px solid var(--color-success);">
-      <h4 style="color: var(--color-success); font-size: 1rem; margin-bottom: 0.5rem;">✅ Parameterized Queries</h4>
+      <h4 style="color: var(--color-success); font-size: 1rem; margin-bottom: 0.5rem;">Parameterized Queries</h4>
       <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
         Luôn sử dụng Prepared Statements. Database Engine sẽ biên dịch khung câu truy vấn trước, và coi toàn bộ dữ liệu truyền vào là một giá trị literal, hoàn toàn không có khả năng thay đổi cấu trúc SQL.
       </p>
@@ -64,14 +64,14 @@
     </div>
 
     <div style="background-color: var(--bg-input); padding: 1.25rem; border-radius: var(--radius-sm); border-top: 3px solid var(--color-warning);">
-      <h4 style="color: var(--color-warning); font-size: 1rem; margin-bottom: 0.5rem;">⚠️ Tránh Dùng Blacklist Regex</h4>
+      <h4 style="color: var(--color-warning); font-size: 1rem; margin-bottom: 0.5rem;">Tránh Dùng Blacklist Regex</h4>
       <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
         Danh sách đen lọc từ khóa luôn thất bại trước các biến thể tinh vi (obfuscation, mixed case, comments, URL encoding). Chỉ nên sử dụng Whitelist Validation (danh sách trắng) cho các dữ liệu có cấu trúc nghiêm ngặt (như ID số).
       </p>
     </div>
 
     <div style="background-color: var(--bg-input); padding: 1.25rem; border-radius: var(--radius-sm); border-top: 3px solid var(--color-info);">
-      <h4 style="color: var(--color-info); font-size: 1rem; margin-bottom: 0.5rem;">🔒 Nguyên Tắc Least Privilege</h4>
+      <h4 style="color: var(--color-info); font-size: 1rem; margin-bottom: 0.5rem;">Nguyên Tắc Least Privilege</h4>
       <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
         Tài khoản cơ sở dữ liệu kết nối từ ứng dụng chỉ nên được cấp đúng các quyền hạn tối thiểu cần thiết (SELECT, INSERT, UPDATE). Tuyệt đối không dùng tài khoản root / dba / sa để kết nối trực tiếp.
       </p>

@@ -1,48 +1,48 @@
 {% extends 'base.html' %}
 
-{% block title %}Lab 1: Authentication Bypass - SQLi Lab{% endblock %}
+{% block title %}Lab 1: Authentication Bypass - SQLi Simulator{% endblock %}
 
 {% block content %}
 <div class="page-header">
-  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
     <div>
       <h1 class="page-title">Lab 1: Authentication Bypass (Chiếm Quyền Đăng Nhập)</h1>
       <p class="page-subtitle">
-        Minh họa cách một câu truy vấn xác thực ghép chuỗi cho phép kẻ tấn công đăng nhập trái phép vào tài khoản <strong>admin</strong> mà không cần mật khẩu.
+        Minh họa câu truy vấn xác thực ghép chuỗi cho phép đăng nhập trái phép vào tài khoản <strong>admin</strong> mà không cần mật khẩu.
       </p>
     </div>
-    <span class="badge badge-danger">Lỗ hổng nghiêm trọng (CVSS 9.8)</span>
+    <span class="badge badge-danger">Lỗ hổng: CVSS 9.8</span>
   </div>
 </div>
 
 <div class="grid-2">
   <!-- Left Side: Interactive Attack Console -->
   <div class="card">
-    <h3 class="card-title">🎮 Bảng Điều Khiển Tấn Công</h3>
+    <h3 class="card-title">Bảng điều khiển đăng nhập</h3>
     
     <form id="auth-form" method="POST" action="{{ url_for('auth.auth_lab') }}">
       
       <!-- Mode Selection -->
-      <label class="form-label">Chọn Chế Độ Bảo Mật</label>
+      <label class="form-label">Chế độ bảo mật</label>
       <div class="mode-selector">
         <div class="mode-option vuln">
           <input type="radio" id="mode-vuln" name="mode" value="vulnerable" {% if mode != 'secure' %}checked{% endif %}>
-          <label for="mode-vuln">⚠️ Vulnerable (Ghép Chuỗi)</label>
+          <label for="mode-vuln">Vulnerable (Ghép chuỗi)</label>
         </div>
         <div class="mode-option secure">
           <input type="radio" id="mode-secure" name="mode" value="secure" {% if mode == 'secure' %}checked{% endif %}>
-          <label for="mode-secure">🛡️ Secure (Prepared Query)</label>
+          <label for="mode-secure">Secure (Prepared Query)</label>
         </div>
       </div>
 
       <!-- Quick Payload Library -->
-      <label class="form-label">Thư Viện Payload Tấn Công Mẫu (1-Click Fill)</label>
+      <label class="form-label">Payload mẫu (Click để điền nhanh)</label>
       <div class="payload-chips">
         <button type="button" class="payload-btn" data-target-input="username-input" data-payload="admin' --">
           admin' -- (Bypass Admin)
         </button>
-        <button type="button" class="payload-btn" data-target-input="username-input" data-payload="' OR '1'='1">
-          ' OR '1'='1 (Tautology)
+        <button type="button" class="payload-btn" data-target-input="username-input" data-payload="' OR '1'='1' --">
+          ' OR '1'='1' -- (Tautology)
         </button>
         <button type="button" class="payload-btn" data-target-input="username-input" data-payload="admin'/*">
           admin'/* (C-Style Comment)
@@ -56,34 +56,34 @@
       <div class="form-group">
         <label class="form-label" for="username-input">Tên tài khoản (Username)</label>
         <input type="text" id="username-input" name="username" class="form-control form-control-mono" 
-               placeholder="Nhập username hoặc tiêm payload..." value="{{ username or '' }}" required autofocus>
+               placeholder="Nhập username hoặc payload..." value="{{ username or '' }}" required autofocus>
       </div>
 
       <div class="form-group">
         <label class="form-label" for="password-input">Mật khẩu (Password)</label>
         <input type="password" id="password-input" name="password" class="form-control" 
-               placeholder="Nhập mật khẩu (hoặc để trống khi bypass)..." value="{{ password or '' }}">
-        <small style="color: var(--text-dim); font-size: 0.75rem; margin-top: 4px; display: block;">
-          * Mật khẩu thật của admin là <code>Admin@Secure2026!</code>. Hãy thử dùng payload để đăng nhập mà không cần nhập mật khẩu này.
+               placeholder="Mật khẩu (có thể để trống khi bypass)..." value="{{ password or '' }}">
+        <small style="color: var(--text-dim); font-size: 0.775rem; margin-top: 4px; display: block;">
+          Gợi ý: Mật khẩu thật của tài khoản admin là <code>Admin@Secure2026!</code>.
         </small>
       </div>
 
-      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+      <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
         <button type="submit" class="btn btn-primary" style="flex: 1;">
-          🚀 Thực Thi Đăng Nhập
+          Đăng nhập thử nghiệm
         </button>
         <button type="button" onclick="document.getElementById('username-input').value=''; document.getElementById('password-input').value='';" class="btn btn-outline">
-          Xóa Form
+          Xóa
         </button>
       </div>
 
     </form>
 
     <!-- Lab Theory Callout -->
-    <div style="margin-top: 1.75rem; padding: 1rem; background-color: var(--bg-input); border-radius: var(--radius-sm); border-left: 3px solid var(--color-primary);">
-      <h4 style="font-size: 0.85rem; color: var(--color-primary); margin-bottom: 4px;">💡 Nguyên Lý Khai Thác</h4>
+    <div style="margin-top: 1.5rem; padding: 0.85rem 1rem; background-color: var(--bg-input); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+      <div style="font-size: 0.8rem; font-weight: 600; color: var(--color-primary); margin-bottom: 2px;">Nguyên lý khai thác:</div>
       <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
-        Khi kẻ tấn công nhập <code>admin' --</code>, dấu nháy đơn <code>'</code> sẽ đóng chuỗi giá trị username trước thời hạn, và ký tự <code>--</code> biến toàn bộ phần còn lại (bao gồm cả mệnh đề <code>AND password = ...</code>) thành comment không còn được thực thi.
+        Dấu nháy đơn <code>'</code> kết thúc sớm chuỗi giá trị username, và ký tự <code>--</code> biến toàn bộ phần còn lại (bao gồm cả mệnh đề <code>AND password = ...</code>) thành comment không được thực thi.
       </p>
     </div>
   </div>
@@ -95,26 +95,26 @@
         {% if result.success %}
           <div class="alert alert-success">
             <div>
-              <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 0.25rem;">
-                🔓 Đăng nhập thành công! {% if result.inspector.injected_syntax_detected %}(SQL INJECTION EXPLOITED){% endif %}
+              <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem;">
+                Đăng nhập thành công {% if result.inspector.injected_syntax_detected %}(Khai thác SQL Injection thành công){% endif %}
               </div>
-              <div>Xin chào: <strong>{{ result.user.full_name }}</strong> (@{{ result.user.username }}) | Vai trò: <span class="badge {% if result.user.role == 'admin' %}badge-danger{% else %}badge-info{% endif %}">{{ result.user.role }}</span></div>
+              <div>Tài khoản: <strong>{{ result.user.full_name }}</strong> (@{{ result.user.username }}) | Vai trò: <span class="badge {% if result.user.role == 'admin' %}badge-danger{% else %}badge-info{% endif %}">{{ result.user.role }}</span></div>
               {% if result.user.secret_note %}
-                <div style="margin-top: 0.5rem; font-family: monospace; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 4px;">📝 Ghi chú bí mật: {{ result.user.secret_note }}</div>
+                <div style="margin-top: 0.4rem; font-family: var(--font-mono); font-size: 0.8rem; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 3px;">Ghi chú bí mật: {{ result.user.secret_note }}</div>
               {% endif %}
             </div>
           </div>
         {% elif result.sql_syntax_error %}
           <div class="alert alert-warning">
             <div>
-              <div style="font-weight: 700;">⚠️ Phát hiện lỗi cú pháp SQLite (Error-based Insight)</div>
-              <div style="font-family: monospace; margin-top: 4px;">{{ result.error }}</div>
+              <div style="font-weight: 600;">Lỗi cú pháp SQLite (Error-based Insight)</div>
+              <div style="font-family: var(--font-mono); margin-top: 3px; font-size: 0.8rem;">{{ result.error }}</div>
             </div>
           </div>
         {% else %}
           <div class="alert alert-danger">
             <div>
-              <div style="font-weight: 700;">🔒 Đăng nhập thất bại</div>
+              <div style="font-weight: 600;">Đăng nhập thất bại</div>
               <div>{{ result.error or 'Xác thực không thành công.' }}</div>
             </div>
           </div>
@@ -123,33 +123,32 @@
         <!-- Render Query Inspector -->
         <div class="inspector-card">
           <div class="inspector-header">
-            <span class="inspector-title">⚡ LIVE SQL QUERY INSPECTOR</span>
+            <span class="inspector-title">SQL QUERY INSPECTOR</span>
             <span class="badge {% if result.inspector.mode == 'secure' %}badge-success{% else %}badge-danger{% endif %}">{{ result.inspector.mode }}</span>
           </div>
           <div class="inspector-body">
             <div class="sql-terminal">{{ result.inspector.html_output | safe }}</div>
-            <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.5rem; line-height: 1.6;">
+            <p style="font-size: 0.825rem; color: #94a3b8; margin-top: 0.4rem; line-height: 1.5;">
               {{ result.inspector.explanation | safe }}
             </p>
-            <div style="margin-top: 0.5rem; font-family: monospace; font-size: 0.8rem; color: #64748b;">
+            <div style="margin-top: 0.4rem; font-family: var(--font-mono); font-size: 0.775rem; color: #64748b;">
               {{ result.inspector.params_display }}
             </div>
             <div class="inspector-legend">
               <div class="legend-item"><div class="legend-swatch" style="background: #94a3b8;"></div> Code gốc</div>
-              <div class="legend-item"><div class="legend-swatch" style="background: #ff3366;"></div> Payload tiêm nhiễm</div>
-              <div class="legend-item"><div class="legend-swatch" style="background: #ffaa00;"></div> Ký hiệu Comment</div>
-              <div class="legend-item"><div class="legend-swatch" style="background: #475569;"></div> Code bị vô hiệu</div>
-              <div class="legend-item"><div class="legend-swatch" style="background: #00e676;"></div> Tham số an toàn (?)</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #ef4444;"></div> Payload tiêm vào</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #f59e0b;"></div> Ký hiệu Comment</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #64748b;"></div> Code bị vô hiệu</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #10b981;"></div> Tham số (?)</div>
             </div>
           </div>
         </div>
       {% else %}
         <!-- Placeholder before any query is executed -->
-        <div class="card" style="text-align: center; padding: 3rem 2rem; color: var(--text-muted);">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
-          <h3 style="color: var(--text-main); margin-bottom: 0.5rem;">Sẵn sàng chạy thử nghiệm</h3>
-          <p style="font-size: 0.9rem; max-width: 400px; margin: 0 auto;">
-            Chọn một payload từ Thư viện phía bên trái (ví dụ: <code>admin' --</code>) rồi bấm <strong>Thực Thi Đăng Nhập</strong> để quan sát trực tiếp cách SQLite xử lý câu lệnh.
+        <div class="card" style="text-align: center; padding: 2.5rem 1.5rem; color: var(--text-muted);">
+          <div style="font-size: 1rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.35rem;">Sẵn sàng chạy thử nghiệm</div>
+          <p style="font-size: 0.85rem; max-width: 380px; margin: 0 auto; line-height: 1.5;">
+            Chọn một payload từ danh sách bên trái (ví dụ: <code>admin' --</code>) rồi bấm <strong>Đăng nhập thử nghiệm</strong> để quan sát cách câu lệnh được xử lý.
           </p>
         </div>
       {% endif %}
@@ -161,4 +160,3 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/simulator.js') }}"></script>
 {% endblock %}
-

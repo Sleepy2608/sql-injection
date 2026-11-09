@@ -6,7 +6,7 @@
 <div class="page-header">
   <div style="display: flex; justify-content: space-between; align-items: flex-start;">
     <div>
-      <h1 class="page-title">🏆 CTF Security Challenge Arena</h1>
+      <h1 class="page-title">CTF Security Challenge Arena</h1>
       <p class="page-subtitle">
         Khu vực bài tập thực hành an ninh mạng: Vận dụng kiến thức SQL Injection để khai thác, tìm kiếm Flag và ghi điểm vào bảng thành tích.
       </p>
@@ -37,7 +37,7 @@
         </div>
 
         <span id="status-{{ ch.id }}" class="badge {% if is_solved %}badge-success{% else %}badge-warning{% endif %}">
-          {% if is_solved %}✅ ĐÃ HOÀN THÀNH{% else %}⏳ CHƯA GIẢI{% endif %}
+          {% if is_solved %}Đã hoàn thành{% else %}Chưa giải{% endif %}
         </span>
       </div>
 
@@ -48,7 +48,7 @@
       <!-- Action & Hint Controls -->
       <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem;">
         <a href="{{ ch.target_url }}" class="btn btn-primary btn-sm">
-          🎯 Mở Phòng Thí Nghiệm &rarr;
+          Mở Phòng Thí Nghiệm &rarr;
         </a>
         <button type="button" class="btn btn-outline btn-sm btn-toggle-hint" data-target-hint="hint-{{ ch.id }}">
           Xem gợi ý
@@ -57,7 +57,7 @@
 
       <!-- Collapsible Hint Box -->
       <div id="hint-{{ ch.id }}" style="display: none; padding: 0.85rem 1rem; background-color: var(--bg-input); border-radius: var(--radius-sm); border: 1px dashed var(--border-color); margin-bottom: 1rem;">
-        <div style="font-size: 0.8rem; font-weight: 700; color: var(--color-warning); margin-bottom: 4px;">💡 GỢI Ý KHAI THÁC:</div>
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--color-warning); margin-bottom: 4px;">Gợi ý khai thác:</div>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">{{ ch.hint }}</p>
         <div style="font-size: 0.8rem; color: var(--text-dim);">
           Payload tham khảo: <code style="color: var(--color-primary); font-family: monospace;">{{ ch.sample_payload }}</code>

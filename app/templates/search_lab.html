@@ -18,7 +18,7 @@
 <div class="grid-2">
   <!-- Left Side: Search Console -->
   <div class="card">
-    <h3 class="card-title">🔍 Tra Cứu Sản Phẩm & Khai Thác</h3>
+    <h3 class="card-title">Tra Cứu Sản Phẩm & Khai Thác</h3>
 
     <form id="search-form" method="POST" action="{{ url_for('search.search_lab') }}">
       
@@ -27,11 +27,11 @@
       <div class="mode-selector">
         <div class="mode-option vuln">
           <input type="radio" id="mode-vuln" name="mode" value="vulnerable" {% if mode != 'secure' %}checked{% endif %}>
-          <label for="mode-vuln">⚠️ Vulnerable (Ghép Chuỗi)</label>
+          <label for="mode-vuln">Vulnerable (Ghép chuỗi SQL)</label>
         </div>
         <div class="mode-option secure">
           <input type="radio" id="mode-secure" name="mode" value="secure" {% if mode == 'secure' %}checked{% endif %}>
-          <label for="mode-secure">🛡️ Secure (Prepared Query)</label>
+          <label for="mode-secure">Secure (Prepared Query)</label>
         </div>
       </div>
 
@@ -63,7 +63,7 @@
 
       <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
         <button type="submit" class="btn btn-primary" style="flex: 1;">
-          🔎 Tìm Kiếm & Kiểm Tra
+          Tìm Kiếm & Kiểm Tra
         </button>
         <button type="button" onclick="document.getElementById('search-input').value='';" class="btn btn-outline">
           Xóa
@@ -74,7 +74,7 @@
 
     <!-- Lab Theory Callout -->
     <div style="margin-top: 1.75rem; padding: 1rem; background-color: var(--bg-input); border-radius: var(--radius-sm); border-left: 3px solid var(--color-warning);">
-      <h4 style="font-size: 0.85rem; color: var(--color-warning); margin-bottom: 4px;">💡 Quy Tắc Toán Tử UNION</h4>
+      <h4 style="font-size: 0.85rem; color: var(--color-warning); margin-bottom: 4px;">Quy Tắc Toán Tử UNION</h4>
       <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
         Để toán tử <code>UNION</code> hoạt động thành công, câu truy vấn thứ hai phải có <strong>cùng số lượng cột</strong> (ở đây là 5 cột: id, name, category, price, description) và các kiểu dữ liệu tương thích với bảng gốc.
       </p>
@@ -92,12 +92,12 @@
             <div>
               <div style="font-weight: 700;">
                 {% if is_exploited %}
-                  🚨 DỮ LIỆU BỊ RÒ RỈ THÀNH CÔNG QUA MỆNH ĐỀ UNION SELECT!
+                  Dữ liệu bị rò rỉ thành công qua mệnh đề UNION SELECT
                 {% else %}
-                  🔍 Kết quả tìm kiếm sản phẩm
+                  Kết quả tìm kiếm sản phẩm
                 {% endif %}
               </div>
-              <div>Tìm thấy <strong>{{ result.count }}</strong> bản ghi trả về từ cơ sở dữ liệu.</div>
+              <div style="margin-top: 2px;">Tìm thấy <strong>{{ result.count }}</strong> bản ghi trả về từ cơ sở dữ liệu.</div>
             </div>
           </div>
 
@@ -117,7 +117,7 @@
                       {% for col in result.columns or row.keys() %}
                         <td>
                           {% if col == 'password_hash' %}
-                            <code style="font-size: 0.75rem; color: #ff3366;">{{ row[col][:25] }}...</code>
+                            <code style="font-size: 0.75rem; color: var(--color-danger);">{{ row[col][:25] }}...</code>
                           {% elif col == 'flag_code' or 'FLAG{' in (row[col]|string) %}
                             <strong style="color: var(--color-success); font-family: monospace;">{{ row[col] }}</strong>
                           {% else %}
@@ -137,7 +137,7 @@
         {% else %}
           <div class="alert alert-warning">
             <div>
-              <div style="font-weight: 700;">⚠️ Lỗi thực thi truy vấn SQLite</div>
+              <div style="font-weight: 700;">Lỗi thực thi truy vấn SQLite</div>
               <div style="font-family: monospace; margin-top: 4px;">{{ result.error }}</div>
             </div>
           </div>
@@ -146,7 +146,7 @@
         <!-- Render Query Inspector -->
         <div class="inspector-card">
           <div class="inspector-header">
-            <span class="inspector-title">⚡ LIVE SQL QUERY INSPECTOR</span>
+            <span class="inspector-title">SQL Query Inspector</span>
             <span class="badge {% if result.inspector.mode == 'secure' %}badge-success{% else %}badge-danger{% endif %}">{{ result.inspector.mode }}</span>
           </div>
           <div class="inspector-body">
@@ -159,16 +159,18 @@
             </div>
             <div class="inspector-legend">
               <div class="legend-item"><div class="legend-swatch" style="background: #94a3b8;"></div> Code gốc</div>
-              <div class="legend-item"><div class="legend-swatch" style="background: #ff3366;"></div> Payload tiêm nhiễm</div>
-              <div class="legend-item"><div class="legend-swatch" style="background: #ffaa00;"></div> Ký hiệu Comment</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #f43f5e;"></div> Payload tiêm nhiễm</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #f59e0b;"></div> Ký hiệu Comment</div>
               <div class="legend-item"><div class="legend-swatch" style="background: #475569;"></div> Code bị vô hiệu</div>
-              <div class="legend-item"><div class="legend-swatch" style="background: #00e676;"></div> Tham số an toàn (?)</div>
+              <div class="legend-item"><div class="legend-swatch" style="background: #10b981;"></div> Tham số an toàn (?)</div>
             </div>
           </div>
         </div>
       {% else %}
         <div class="card" style="text-align: center; padding: 3rem 2rem; color: var(--text-muted);">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🔎</div>
+          <div style="display: inline-block; padding: 0.5rem 1rem; border-radius: 9999px; background: var(--bg-input); font-size: 0.85rem; font-weight: 600; color: var(--text-dim); margin-bottom: 1rem;">
+            Chưa có truy vấn
+          </div>
           <h3 style="color: var(--text-main); margin-bottom: 0.5rem;">Sẵn sàng trích xuất dữ liệu</h3>
           <p style="font-size: 0.9rem; max-width: 420px; margin: 0 auto;">
             Chọn payload <strong>Trích xuất bảng Users</strong> từ Thư viện bên trái để xem cách dữ liệu tài khoản và password hash bị phơi bày ra giao diện tìm kiếm sản phẩm.

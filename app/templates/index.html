@@ -1,76 +1,79 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard Tổng Quan - SQLi Lab{% endblock %}
+{% block title %}Dashboard - SQLi Simulator{% endblock %}
 
 {% block content %}
 <div class="page-header">
   <h1 class="page-title">SQL Injection Attack & Defense Simulator</h1>
   <p class="page-subtitle">
-    Môi trường phòng thí nghiệm tương tác (Interactive Security Lab) giúp trực quan hóa cơ chế tấn công SQL Injection và kỹ thuật phòng thủ chuẩn mực.
+    Môi trường mô phỏng trực quan các kỹ thuật tấn công SQL Injection cơ bản và so sánh hiệu quả của các cơ chế phòng thủ trên cơ sở dữ liệu SQLite cục bộ.
   </p>
 </div>
 
 <!-- Metrics Overview -->
-<div class="grid-4" style="margin-bottom: 2rem;">
-  <div class="card" style="border-left: 4px solid var(--color-primary);">
-    <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Người dùng giả lập</div>
-    <div style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-top: 4px;">{{ user_count }} Accounts</div>
-    <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">Bảng users (admin, dev, hr, guest)</div>
+<div class="grid-4" style="margin-bottom: 1.75rem;">
+  <div class="card">
+    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px;">Tài khoản mẫu</div>
+    <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-top: 4px;">{{ user_count }} Accounts</div>
+    <div style="font-size: 0.775rem; color: var(--text-dim); margin-top: 2px;">Bảng users (admin, dev, hr, guest)</div>
   </div>
 
-  <div class="card" style="border-left: 4px solid var(--color-info);">
-    <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Sản phẩm tra cứu</div>
-    <div style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-top: 4px;">{{ product_count }} Items</div>
-    <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">Bảng products cho UNION attack</div>
+  <div class="card">
+    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px;">Sản phẩm tra cứu</div>
+    <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-top: 4px;">{{ product_count }} Items</div>
+    <div style="font-size: 0.775rem; color: var(--text-dim); margin-top: 2px;">Bảng products cho UNION attack</div>
   </div>
 
-  <div class="card" style="border-left: 4px solid var(--color-warning);">
-    <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Nhật ký truy vấn</div>
-    <div style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-top: 4px;">{{ log_count }} Events</div>
-    <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">Toàn bộ audit logs trong SQLite</div>
+  <div class="card">
+    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px;">Nhật ký truy vấn</div>
+    <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-top: 4px;">{{ log_count }} Events</div>
+    <div style="font-size: 0.775rem; color: var(--text-dim); margin-top: 2px;">Lịch sử audit log trong SQLite</div>
   </div>
 
-  <div class="card" style="border-left: 4px solid var(--color-danger);">
-    <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Cảnh báo rủi ro cao</div>
-    <div style="font-size: 1.8rem; font-weight: 800; color: var(--color-danger); margin-top: 4px;">{{ high_risk_count }} Exploits</div>
-    <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">Truy vấn tiêm nhiễm phát hiện</div>
+  <div class="card">
+    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px;">Cảnh báo rủi ro cao</div>
+    <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-danger); margin-top: 4px;">{{ high_risk_count }} Exploits</div>
+    <div style="font-size: 0.775rem; color: var(--text-dim); margin-top: 2px;">Truy vấn tiêm nhiễm phát hiện</div>
   </div>
 </div>
 
 <!-- Labs Navigation Cards -->
-<h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--text-main);">🧪 Các Phòng Thí Nghiệm & Thử Thách</h2>
-<div class="grid-3" style="margin-bottom: 2.5rem;">
+<div style="margin-bottom: 1.25rem;">
+  <h2 style="font-size: 1.15rem; font-weight: 600; color: var(--text-main);">Các phòng thí nghiệm & thử thách</h2>
+</div>
+
+<div class="grid-3" style="margin-bottom: 1.5rem;">
   
   <div class="card">
-    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔑</div>
-    <h3 class="card-title">Lab 1: Authentication Bypass</h3>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
-      Mô phỏng chiếm quyền quản trị viên mà không cần mật khẩu bằng cách bẻ gãy biểu thức logic WHERE với <code>admin' --</code> hoặc <code>' OR '1'='1</code>.
+    <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-danger); text-transform: uppercase; margin-bottom: 0.35rem;">Lab 01</div>
+    <h3 class="card-title">Authentication Bypass</h3>
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem; line-height: 1.5;">
+      Mô phỏng chiếm quyền quản trị viên không cần mật khẩu bằng cách bẻ gãy biểu thức logic WHERE với payload <code>admin' --</code> hoặc <code>' OR '1'='1</code>.
     </p>
     <a href="{{ url_for('auth.auth_lab') }}" class="btn btn-primary btn-sm" style="width: 100%;">
-      Vào Phòng Thí Nghiệm 1 &rarr;
+      Vào phòng Lab 1 &rarr;
     </a>
   </div>
 
   <div class="card">
-    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
-    <h3 class="card-title">Lab 2: UNION Data Exfiltration</h3>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
-      Khai thác ô tìm kiếm sản phẩm bằng mệnh đề <code>UNION SELECT</code> để trích xuất toàn bộ tài khoản người dùng, mật khẩu hash và cờ bí mật ra màn hình.
+    <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-warning); text-transform: uppercase; margin-bottom: 0.35rem;">Lab 02</div>
+    <h3 class="card-title">UNION Data Exfiltration</h3>
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem; line-height: 1.5;">
+      Khai thác tính năng tìm kiếm sản phẩm bằng toán tử <code>UNION SELECT</code> để trích xuất dữ liệu người dùng, mật khẩu băm và cờ bí mật ra màn hình.
     </p>
     <a href="{{ url_for('search.search_lab') }}" class="btn btn-primary btn-sm" style="width: 100%;">
-      Vào Phòng Thí Nghiệm 2 &rarr;
+      Vào phòng Lab 2 &rarr;
     </a>
   </div>
 
   <div class="card">
-    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛡️</div>
-    <h3 class="card-title">Lab 3: Filter Evasion (Bypass WAF)</h3>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
-      Khám phá lý do tại sao bộ lọc danh sách đen (Blacklist regex) thất bại trước kỹ thuật biến đổi chữ hoa/thường hoặc comment inline <code>/**/</code>.
+    <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-info); text-transform: uppercase; margin-bottom: 0.35rem;">Lab 03</div>
+    <h3 class="card-title">Filter Evasion (Bypass WAF)</h3>
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem; line-height: 1.5;">
+      Khám phá nguyên nhân bộ lọc từ khóa danh sách đen (Blacklist regex) thất bại trước kỹ thuật biến đổi chữ hoa/thường hoặc chú thích <code>/**/</code>.
     </p>
     <a href="{{ url_for('filter_lab.filter_lab') }}" class="btn btn-primary btn-sm" style="width: 100%;">
-      Vào Phòng Thí Nghiệm 3 &rarr;
+      Vào phòng Lab 3 &rarr;
     </a>
   </div>
 
@@ -78,38 +81,37 @@
 
 <!-- Second Row: CTF & Tools -->
 <div class="grid-3">
-  <div class="card" style="background: linear-gradient(145deg, #182235, #142848);">
-    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏆</div>
+  <div class="card">
+    <div style="font-size: 0.75rem; font-weight: 600; color: var(--color-primary); text-transform: uppercase; margin-bottom: 0.35rem;">Thực hành</div>
     <h3 class="card-title">CTF Challenge Arena</h3>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
-      Chế độ bài tập chấm điểm thực hành: 3 thử thách từ Dễ đến Khó với hệ thống Flag tự động xác thực và bảng điểm.
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem; line-height: 1.5;">
+      Bộ 3 bài tập thực hành theo cấp độ từ Dễ đến Khó với hệ thống tự động kiểm tra cờ (Flag) và tính điểm.
     </p>
-    <a href="{{ url_for('challenges.challenge_board') }}" class="btn btn-danger btn-sm" style="width: 100%;">
-      Chinh Phục Thử Thách CTF &rarr;
+    <a href="{{ url_for('challenges.challenge_board') }}" class="btn btn-outline btn-sm" style="width: 100%;">
+      Mở đấu trường CTF &rarr;
     </a>
   </div>
 
   <div class="card">
-    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗄️</div>
+    <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.35rem;">Dữ liệu</div>
     <h3 class="card-title">Database Inspection</h3>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
-      Xem trực tiếp cấu trúc và dữ liệu các bảng <code>users</code>, <code>products</code>, <code>secret_vault</code> trong SQLite Sandbox.
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem; line-height: 1.5;">
+      Xem trực tiếp cấu trúc bảng và bản ghi dữ liệu giả lập trong cơ sở dữ liệu SQLite cục bộ để đối chiếu kết quả tấn công.
     </p>
     <a href="{{ url_for('api.db_viewer') }}" class="btn btn-outline btn-sm" style="width: 100%;">
-      Mở Database Viewer &rarr;
+      Xem cơ sở dữ liệu &rarr;
     </a>
   </div>
 
   <div class="card">
-    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
-    <h3 class="card-title">Audit & Security Logs</h3>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
-      Theo dõi nhật ký các cuộc tấn công theo thời gian thực: thời điểm, payload, truy vấn thực thi và mức độ rủi ro.
+    <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.35rem;">Giám sát</div>
+    <h3 class="card-title">Audit Logs</h3>
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem; line-height: 1.5;">
+      Theo dõi nhật ký chi tiết các lần gửi truy vấn vào hệ thống: thời điểm, payload, câu SQL thực thi và đánh giá mức độ rủi ro.
     </p>
     <a href="{{ url_for('api.audit_logs_page') }}" class="btn btn-outline btn-sm" style="width: 100%;">
-      Xem Lịch Sử Audit Logs &rarr;
+      Xem Audit Logs &rarr;
     </a>
   </div>
 </div>
 {% endblock %}
-

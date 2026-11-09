@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}SQL Injection Attack & Defense Lab{% endblock %} - Đồ Án An Toàn Thông Tin</title>
+  <title>{% block title %}SQL Injection Simulator{% endblock %} - Đồ Án An Toàn Thông Tin</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -16,8 +16,8 @@
   <!-- Navigation Bar -->
   <nav class="navbar">
     <a href="{{ url_for('main.index') }}" class="nav-brand">
-      <div class="brand-icon">⚡</div>
-      <span>SQLi Simulator Lab</span>
+      <div class="brand-icon">S</div>
+      <span>SQLi Simulator</span>
     </a>
 
     <ul class="nav-links">
@@ -34,10 +34,10 @@
     <div class="nav-actions">
       <div class="sandbox-badge">
         <span class="pulse-dot"></span>
-        SQLite Sandbox
+        SQLite Local Sandbox
       </div>
-      <button onclick="triggerDatabaseReset()" class="btn btn-outline btn-sm" title="Khôi phục dữ liệu ban đầu">
-        🔄 Reset DB
+      <button onclick="triggerDatabaseReset()" class="btn btn-outline btn-sm" title="Khôi phục cơ sở dữ liệu mẫu">
+        Reset Database
       </button>
     </div>
   </nav>
@@ -49,9 +49,9 @@
 
   <!-- Footer -->
   <footer class="footer">
-    <p><strong>Đồ án môn học An toàn thông tin</strong> — Chương trình mô phỏng tấn công SQL Injection & Cơ chế phòng thủ</p>
-    <p style="margin-top: 4px; font-size: 0.8rem; color: #64748b;">
-      Môi trường Sandbox SQLite an toàn cục bộ. Phục vụ mục đích học tập và nghiên cứu bảo mật chuẩn OWASP.
+    <p><strong>Đồ án môn học An toàn thông tin</strong> — Case Study: Mô phỏng tấn công SQL Injection và cơ chế phòng thủ</p>
+    <p style="margin-top: 4px; font-size: 0.775rem; color: #64748b;">
+      Môi trường thử nghiệm cục bộ SQLite an toàn, phục vụ mục đích học thuật và nghiên cứu theo chuẩn OWASP.
     </p>
   </footer>
 
@@ -59,4 +59,3 @@
   {% block scripts %}{% endblock %}
 </body>
 </html>
-
